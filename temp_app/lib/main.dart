@@ -31,6 +31,7 @@ class _TemperatureConverterScreenState extends State<TemperatureConverterScreen>
   List<String> _conversionHistory = [];
   late AnimationController _controller;
   late Animation<double> _animation;
+  Color _backgroundColor = Colors.grey[300]!;
 
   @override
   void initState() {
@@ -60,6 +61,7 @@ class _TemperatureConverterScreenState extends State<TemperatureConverterScreen>
     if (_inputController.text.isEmpty) {
       setState(() {
         _output = '';
+        _backgroundColor = Colors.grey[300]!;
       });
       return;
     }
@@ -72,17 +74,19 @@ class _TemperatureConverterScreenState extends State<TemperatureConverterScreen>
         convertedTemperature = inputTemperature * 9 / 5 + 32;
         setState(() {
           _output =
-              '$inputTemperature °C = ${convertedTemperature.toStringAsFixed(3)} °F';
+              '$inputTemperature °C = ${convertedTemperature.toStringAsFixed(2)} °F';
           _conversionHistory.add(
               'C -> F: $inputTemperature = ${convertedTemperature.toStringAsFixed(2)}F');
+          _setTemperatureEffect(convertedTemperature);
         });
       } else {
         convertedTemperature = (inputTemperature - 32) * 5 / 9;
         setState(() {
           _output =
-              '$inputTemperature °F = ${convertedTemperature.toStringAsFixed(3)} °C';
+              '$inputTemperature °F = ${convertedTemperature.toStringAsFixed(2)} °C';
           _conversionHistory.add(
               'F -> C: $inputTemperature = ${convertedTemperature.toStringAsFixed(2)}C');
+          _setTemperatureEffect(inputTemperature);
         });
       }
 
@@ -90,14 +94,25 @@ class _TemperatureConverterScreenState extends State<TemperatureConverterScreen>
     } catch (e) {
       setState(() {
         _output = 'Invalid input';
+        _backgroundColor = Colors.grey[300]!;
       });
+    }
+  }
+
+  void _setTemperatureEffect(double temperature) {
+    if (temperature < 50) {
+      _backgroundColor = Colors.blue[100]!;
+    } else if (temperature > 100) {
+      _backgroundColor = Colors.red[100]!;
+    } else {
+      _backgroundColor = Colors.grey[300]!;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
         title: Text('Temperature Converter'),
       ),
